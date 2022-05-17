@@ -49,7 +49,7 @@ source: string
 The Dataproc Cluster is ephemeraly created and destroyed by the Cloud Composer DAG, which code you can find in the following URL. As part of the Cluster creation command, it's specified the Hive Metastore that will be attached to the Ephemeral Cluster.
 
 ## Dataproc Cluster Command
-Adding a change 9
+Adding a change 10
 
 
 
