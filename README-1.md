@@ -19,37 +19,80 @@ Example message published to the Pub/Sub topic:
 ${RUN_SCRIPT} "sh ${ETL_CODE_BASE}/cerebro/run_replicator.sh groupon_production im_brand_list"
 ```
 
-## Google Cloud Function Deployment
+## Google Cloud Function Event and Trigger Type
 
-Execute the following command to deploy the cloud function that will be in charge of triggering the Cloud Composer DAG that will copy the data from Teradata to Google Cloud Storage.
-
-```bash
-gcloud functions deploy my-python-function --entry-point helloworld --runtime python37 --trigger-http --allow-unauthenticated --serviceaccount=aaa@google.com
-```
+Events are things that happen within the cloud environment that you might want / need to take action on. In this case the Google Cloud Function is going to be triggered by a Pub/Sub message publish event.
 
 ## Google Cloud Function Code
 
 The following URL contains the Cloud Function Python code.
 
 ## BigQuery Table Entries & Schema
-<br />
 
 ### Table Entries:
 There will be two table entries generated. One for the OnPrem execution and another for the GCP execution. Cloud Composer DAG execution will update the GCP execution entry once the process is completed.  
-<br />
 
 ### Table Schema:
-id: integer   
-command: string   
-timestamp: datetime   
-source: string   
+Below is the BigQuery table schema that is going to be used to track the different Run Replicator executions.
+
+```json
+[
+  {
+    "name": "dbName",
+    "type": "STRING"
+  },
+  {
+    "name": "tableName",
+    "type": "STRING"
+  },
+  {
+    "name": "td_timestamp",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "last_modified_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "environment",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "dataproc_job_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]
+```
 
 ## Dataproc Cluster Ephemeral Creation, Image and linked Hive Metastore
 
 The Dataproc Cluster is ephemeraly created and destroyed by the Cloud Composer DAG, which code you can find in the following URL. As part of the Cluster creation command, it's specified the Hive Metastore that will be attached to the Ephemeral Cluster.
 
-## Dataproc Cluster Command
-Adding a change 10
+### Dataproc Cluster Command
 
+The Dataproc Cluster Command is embebbed in the Cloud Composer (Airflow) DAG. Find below the Dataproc Cluster command being executed:
+
+```bash
+gcloud dataproc clusters create run-replicator-airflow \  
+--region=<region> \  
+--no-address \  
+--subnet=<subnet> \  
+--service-account=<service-account> \  
+--single-node \  
+--tags 'allow-iap-ssh','dataproc-vm' \  
+--dataproc-metastore=<dataproc-metastore> \  
+--image=<dataproc-image> \  
+--max-idle=12h \  
+--scopes cloud-platform
+```
 
 
