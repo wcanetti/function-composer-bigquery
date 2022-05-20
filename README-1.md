@@ -25,7 +25,7 @@ Events are things that happen within the cloud environment that you might want /
 
 ## Google Cloud Function Code
 
-The following URL contains the Cloud Function Python code.
+This URL contains the Cloud Function Python code.
 
 ## BigQuery Table Entries & Schema
 
@@ -73,9 +73,28 @@ Below is the BigQuery table schema that is going to be used to track the differe
 ]
 ```
 
+## Cloud Composer DAG and the integration with Dataproc through DataprocSubmitPigJob Operator
+
+This URL contains the Cloud Composer DAG code.  
+
+To integrate with Cloud Dataproc the DataprocSubmitPigJob Airflow Operator is used to submit shell scripts to the Dataproc Cluster in order to execute the Run Replicator application.
+
+```python
+DataprocSubmitPigJobOperator(
+task_id = re.sub(r'\W+', '', 'CEREBRO_COPY_ACTIVE_DEALS_${varRUNDATE}'),
+job_name= re.sub(r'\W+', '', 'CEREBRO_COPY_ACTIVE_DEALS_${varRUNDATE}'),
+query = f'sh export HOME=/root && export ODBCINI=/root/.odbc.ini && export ZOMBIERC=/root/.zrc2 && gsutil cp gs:/{ETL_CODE_BASE}/cerebro/run_replicator.sh . && chmod 777 run_replicator.sh && ./run_replicator.sh  dev1_groupondw ref_attr_class_dev',
+retries=0,
+retry_delay=60,
+priority_weight=21-10,
+cluster_name = 'zr-1652997564-cerebro-copy-active-deals-varrundate',
+region='us-central1',
+)
+```
+
 ## Dataproc Cluster Ephemeral Creation, Image and linked Hive Metastore
 
-The Dataproc Cluster is ephemeraly created and destroyed by the Cloud Composer DAG, which code you can find in the following URL. As part of the Cluster creation command, it's specified the Hive Metastore that will be attached to the Ephemeral Cluster.
+The Dataproc Cluster is ephemeraly created and destroyed by the Cloud Composer DAG, which code you can find in this URL. As part of the Cluster creation command, it's specified the Hive Metastore that will be attached to the Ephemeral Cluster.
 
 ### Dataproc Cluster Command
 
