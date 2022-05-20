@@ -12,13 +12,6 @@ As part of the migration to GCP, despite a few pipeline may still be running in 
 
 5. The last task of the Cloud Composer DAG will register in the Cloud SQL the GCP Run Replicator execution and update the entry generated in point 3.
 
-## Format of the message published to the Pub/Sub topic
-
-Example message published to the Pub/Sub topic:
-```bash
-${RUN_SCRIPT} "sh ${ETL_CODE_BASE}/cerebro/run_replicator.sh groupon_production im_brand_list"
-```
-
 ## Google Cloud Function Event and Trigger Type
 
 Events are things that happen within the cloud environment that you might want / need to take action on. In this case the Google Cloud Function is going to be triggered by a Pub/Sub message publish event.
@@ -26,6 +19,17 @@ Events are things that happen within the cloud environment that you might want /
 ## Google Cloud Function Code
 
 This URL contains the Cloud Function Python code.
+
+## Format of the message published to the Pub/Sub topic
+
+Example message published to the Pub/Sub topic:
+```bash
+--
+--
+--
+--
+--
+```
 
 ## BigQuery Table Entries & Schema
 
@@ -83,7 +87,7 @@ To integrate with Cloud Dataproc the DataprocSubmitPigJob Airflow Operator is us
 DataprocSubmitPigJobOperator(
 task_id = re.sub(r'\W+', '', 'CEREBRO_COPY_ACTIVE_DEALS_${varRUNDATE}'),
 job_name= re.sub(r'\W+', '', 'CEREBRO_COPY_ACTIVE_DEALS_${varRUNDATE}'),
-query = f'sh export HOME=/root && export ODBCINI=/root/.odbc.ini && export ZOMBIERC=/root/.zrc2 && gsutil cp gs:/{ETL_CODE_BASE}/cerebro/run_replicator.sh . && chmod 777 run_replicator.sh && ./run_replicator.sh  dev1_groupondw ref_attr_class_dev',
+query = f'gsutil cp gs:/{ETL_CODE_BASE}/cerebro/run_replicator.sh . && chmod 777 run_replicator.sh && ./run_replicator.sh  dev1_groupondw ref_attr_class_dev',
 retries=0,
 retry_delay=60,
 priority_weight=21-10,
